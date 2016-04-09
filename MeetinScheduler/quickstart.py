@@ -92,30 +92,47 @@ def insertEvent(summary, location, description, sDateTime, eDateTime):
 
 
 def main():
-  """Shows basic usage of the Google Calendar API.
-
-  Creates a Google Calendar API service object and outputs a list of the next
-  10 events on the user's calendar.
+  """Basic meeting generation.
   """
-#  credentials = get_credentials()
-#  http = credentials.authorize(httplib2.Http())
-#  service = discovery.build('calendar', 'v3', http=http)
-#
-#  now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-#  print('Getting the upcoming 10 events')
-#  eventsResult = service.events().list(
-#    calendarId='primary', timeMin=now, maxResults=10, singleEvents=True,
-#    orderBy='startTime').execute()
-#  events = eventsResult.get('items', [])
+  year        = int(raw_input("Year for meeting?"))
+  month       = int(raw_input("Month for meeting?"))
+  day         = -1
+  dow         = ""
+  if (raw_input("In the next week? (y/n)") == "n"):
+    day       = int(raw_input("Day for meeting?"))
+  else:
+    dow       = raw_input("Day of the week? (m/t/w/h/f/s/u)")
 
-#  if not events:
-#    print('No upcoming events found.')
-#  for event in events:
-#    start = event['start'].get('dateTime', event['start'].get('date'))
-#    print(start, event['summary'])
-  insertEvent("testsum", "loc", "description", datetime.datetime(2016, 4, 8, 23, 0, 0).isoformat() + 'Z', datetime.datetime(2016, 5, 8, 0, 0, 0).isoformat() + 'Z')
+  hour        = -1
+  minute      = -1
+  tod         = ""
+  if (raw_input("Specific time? (y/n)") == "y"):
+    hour      = int(raw_input("Hour? (24 Hour clock)"))
+    minute    = int(raw_input("Minute? (24 hour clock)"))
+  else:
+    minute    = 0 #TODO
+    tod       = raw_input("What time of day? (m)orning/(a)fternoon/(e)vening)")
+    if (tod == "m"): #TODO
+      hour = 10
+    elif (tod == "a"):
+      hour = 14
+    else:
+      hour = 19
 
-  
+  length      = int(raw_input("How long will the meeting take? (number of minutes)"))
+  prep        = int(raw_input("How much prep/travel time will you need before? (number of minutes)")) #TODO 
+  summary     = raw_input("Meeting Summary:")
+  location    = raw_input("Meeting location:")
+  description = raw_input("Meeting description:")
+  reminder    = raw_input("Would you like a reminder 10 minutes before? (y/n)") #TODO
+  email       = raw_input("Would you like an email the night before? (y/n)")    #TODO
+
+  startTimeLocal = datetime.datetime(year, month, day, hour, minute, 0)
+  startTimeUTC   = startTimeLocal + datetime.timedelta(0, 4*60*60)
+  endTime        = startTimeUTC + datetime.timedelta(0, minute*60)
+
+  insertEvent(summary, location, description, startTimeUTC.isoformat() + "Z", endTime.isoformat() + 'Z')
+
 
 if __name__ == '__main__':
   main()

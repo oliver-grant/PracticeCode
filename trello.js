@@ -45,8 +45,10 @@ function getCardFromID(cardID, callback) {
       if (card.actions[i].data.listAfter != undefined) {
         var listAfter = JSON.stringify(card.actions[i].data.listAfter, null, 4);
         if (listAfter.indexOf("Done") != -1) {
+	  actionTime = new  Date(Date.parse(card.actions[i].date) - 4*60*60*1000);
+	  actionTimeStr = actionTime.toISOString();
           updateHash(myHash, 
-                     card.actions[i].date.split("T")[0], 
+                     actionTimeStr.split("T")[0],  
                      parseFloat(card.name.split(" ")[0]));
 	}
       }
@@ -90,8 +92,14 @@ t.get('/1/members/me/boards', {lists: "open"},
 });
 
 function printHash(myHash) {
+  retVals = []
   for (var item in myHash) {
-    nPrint(item + ": " + myHash[item]);
+    retVals.push(item + ": " + myHash[item]);
   }
+  retVals.sort()
+  for (var item in retVals) {
+    nPrint(retVals[item]);
+  }
+
 }
 
