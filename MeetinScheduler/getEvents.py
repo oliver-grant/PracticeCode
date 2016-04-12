@@ -33,6 +33,17 @@ MIN_START_TIME = 4
 MAX_START_TIME = 16
 ###################################
 
+# Consume an hour and minute integers and converts to US/Eastern datetime
+def hourToUSEDT(hr, mnt, timeNow):
+  return pytz.timezone('US/Eastern').localize(timeNow.replace(
+	       hour=hr-4, minute=mnt, second=0, microsecond=0)) 
+
+# consume date String and converts to datetime object
+def strToDate(dStr):
+  return parse_date(dStr).replace(tzinfo=pytz.UTC) 
+
+
+
 def main():
   credentials = get_credentials()
   http = credentials.authorize(httplib2.Http())
@@ -49,14 +60,10 @@ def main():
     start = event['start'].get('dateTime', event['start'].get('date'))
     end   = event['end'].get('dateTime', event['end'].get('date'))
 
-    if ((parse_date(start).replace(tzinfo=pytz.UTC) >  
-           pytz.utc.localize(timeNow.replace(hour=MIN_START_TIME, minute=0, second=0,
-	                 microsecond=0))) and 
-	(parse_date(start).replace(tzinfo=pytz.UTC) <= 
-	   pytz.utc.localize(timeNow.replace(hour=MAX_START_TIME, minute=0, 
-	                 second=0, microsecond=0)))):
+    if ((strToDate(start) >=  hourToUSEDT(MIN_START_TIME,0, timeNow)) and 
+	(strToDate(start) <= hourToUSEDT(MAX_START_TIME, 0, timeNow))):
       print(parse_date(start).hour, ":", parse_date(start).minute, "-",
-            parse_date(end).hour,":", parse_date(end).minute, "-", event['summary'])
-
+            min(parse_date(end).hour,23),":", parse_date(end).minute, "-", event['summary'])
+ 
 if __name__ == '__main__':
   main()
