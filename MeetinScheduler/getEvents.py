@@ -55,7 +55,8 @@ def main():
 	(parse_date(start).replace(tzinfo=pytz.UTC) <= 
 	   pytz.utc.localize(timeNow.replace(hour=MAX_START_TIME, minute=0, 
 	                 second=0, microsecond=0)))):
-      print(start, end, event['summary'])
+      print(parse_date(start).hour, ":", parse_date(start).minute, "-",
+            parse_date(end).hour,":", parse_date(end).minute, "-", event['summary'])
 
 if __name__ == '__main__':
   main()
