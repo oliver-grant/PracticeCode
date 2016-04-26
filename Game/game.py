@@ -57,11 +57,13 @@ blocks  = [[0 for y in range(y_blocks)] for x in range(x_blocks)]
 # Draws a randomized dungeon
 def create_dungeon(screen, length):
     #get starting location
-    global x_start, y_start, blocks
+    global x_start, y_start, blocks, x_coord, y_coord
     if ((x_start == -1) and (y_start == -1)):
         x_start = random.randint(0, x_blocks-1)
         y_start = random.randint(0, y_blocks-1)
     blocks[x_start][y_start] = 2
+    x_coord = x_start*x_block_size
+    y_coord = y_start*y_block_size
 
     #Randomly build dungeon
     size = 0
@@ -88,18 +90,36 @@ def draw_dungeon(screen):
 
 def draw_stick_figure(screen, x, y):
     # Head
-    pygame.draw.ellipse(screen, RED, [1 + x, y, 5, 5], 0)
+    pygame.draw.ellipse(screen, GREEN, [1 + x, y, 5, 5], 0)
  
     # Legs
-    pygame.draw.line(screen, RED, [3 + x, 9 + y], [5 + x, 14 + y], 1)
-    pygame.draw.line(screen, RED, [3 + x, 9 + y], [x, 14 + y], 2)
+    pygame.draw.line(screen, GREEN, [3 + x, 9 + y], [5 + x, 14 + y], 1)
+    pygame.draw.line(screen, GREEN, [3 + x, 9 + y], [x, 14 + y], 1)
  
     # Body
-    pygame.draw.line(screen, RED, [3 + x, 9 + y], [5 + x, 7 + y], 1)
+    pygame.draw.line(screen, GREEN, [3 + x, 9 + y], [5 + x, 7 + y], 1)
  
     # Arms
-    pygame.draw.line(screen, RED, [3 + x, 4 + y], [5 + x, 9 + y], 1)
-    pygame.draw.line(screen, RED, [3 + x, 4 + y], [1 + x, 9 + y], 1)
+    pygame.draw.line(screen, GREEN, [3 + x, 4 + y], [5 + x, 9 + y], 1)
+    pygame.draw.line(screen, GREEN, [3 + x, 4 + y], [1 + x, 9 + y], 1)
+
+def valid_square(x, y):
+  global blocks
+  if (x >= 0) and (x < x_blocks) and (y >= 0) and (y < y_blocks) and (blocks[x][y] != 0):
+    return True
+  else:
+    return False
+
+def valid_move(x_speed, y_speed):
+  global blocks, x_coord, y_coord
+  if (valid_square((x_coord + x_speed)/x_block_size, (y_coord + y_speed)/y_block_size) and 
+      valid_square((x_coord + x_speed + 5)/x_block_size, (y_coord + y_speed)/y_block_size) and 
+      valid_square((x_coord + x_speed + 5)/x_block_size, (y_coord + y_speed+ 14)/y_block_size) and 
+      valid_square((x_coord + x_speed)/x_block_size, (y_coord + y_speed+14)/y_block_size)):
+    return True
+  else:
+    return False 
+ 
 
 
 # -------- Main Program Loop -----------
@@ -134,8 +154,9 @@ while not done:
 
 
   # Moving the guy
-  x_coord = x_coord + x_speed
-  y_coord = y_coord + y_speed
+  if valid_move(x_speed, y_speed):
+    x_coord = x_coord + x_speed
+    y_coord = y_coord + y_speed
     
   # --- Screen-clearing code goes here
  
