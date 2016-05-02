@@ -49,7 +49,7 @@ var error = function(errorMsg) {
 // Reads in meetings.txt and adds all events to list listID
 function addEventsToList(listID) {
   fs = require('fs')
-  fs.readFile('meetings.txt', 'utf8', function (err,data) {
+  fs.readFile('Documents/PracticeCode/MeetinScheduler/meetings.txt', 'utf8', function (err,data) {
     if (err) {
       return console.log(err);
     }
